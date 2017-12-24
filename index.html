@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=mOpkTClYxOcC0vUQ2GDtLWu4iBPuxgLT"></script>
+    <script src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+	<title></title>
+</head>
+<body>
+</body>
+</html>
+<script type="text/javascript">
+    $.ajax({
+        type: "get",
+        url: "http://localhost:8082/baidukfc/getall",
+        dataType: "json",
+        success: function(results){
+            if(results == null){
+                console.error("query getall empty!")
+            }else {
+                console.log("query getall success")
+                var projection =new BMap.MercatorProjection();
+                for(var i = 0; i < results.length; i++){
+                    debugger;
+                    x = ((results[i].dipointx)/100).toFixed(3);
+                    y = ((results[i].dipointy)/100).toFixed(3);
+                    var point = projection.pointToLngLat(new BMap.Pixel(x,y))
+                    console.log(point)
+                    updatedata(point.lng, point.lat, results[i].id);
+                }
+            }
+        },
+        error: function(){
+            console.error("query error!")
+        }
+    })
+    var projection =new BMap.MercatorProjection();
+    var point = projection.pointToLngLat(new BMap.Pixel(13225158.9, 3747322.08))
+    console.log(point);
+
+    function updatedata(lng, lat, id){
+        $.ajax({
+            type: "get",
+            url: "http://localhost:8082/baidukfc/setxy" + "?lng=" + lng + "&lat=" + lat + "&id=" + id,
+            dataType: "json",
+            success: function(results) {
+                console.log(results);
+            },
+            error: function(){
+                console.log("update data error!");
+            }
+        })
+    }
+</script>
